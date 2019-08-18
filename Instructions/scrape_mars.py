@@ -92,9 +92,21 @@ def scrape():
 
     mars_earth_comp_df = tables[0]
     mars_earth_comp_df.columns = ['Mars-Earth Comparison', 'Mars', 'Earth']
+    mars_comparison = {}
+    dict_temp = {}
+    for i in range(len(mars_earth_comp_df)):
+        for j in range(1):
+            dict_temp = {mars_earth_comp_df.iloc[i][j]: mars_earth_comp_df.iloc[i][j+1]}
+            mars_comparison.update(dict_temp)
 
     mars_planet_profile_df = tables[1]
     mars_planet_profile_df.columns = ['Mars Planet Profile', 'Measurement']
+    mars_profile = {}
+    dict_temp = {}
+    for i in range(len(mars_planet_profile_df)):
+        for j in range(1):
+            dict_temp = {mars_planet_profile_df.iloc[i][j]: mars_planet_profile_df.iloc[i][j+1]}
+            mars_profile.update(dict_temp)
 
     #* 5) Visit the USGS Astrogeology site [here](https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars) 
     #to obtain high resolution images for each of Mar's hemispheres.
@@ -115,8 +127,8 @@ def scrape():
     mars_dict["mars_news"] = news_p
     mars_dict["mars_image"] = featured_image_url
     mars_dict["mars_currentweather"] = mars_weather
-    mars_dict["mars_comparison"] = mars_earth_comp_df
-    mars_dict["mars_profile"] = mars_planet_profile_df
+    mars_dict["mars_comparison"] = mars_comparison
+    mars_dict["mars_profile"] = mars_profile
     mars_dict["mars_image_urls"] = hemisphere_image_urls
 
     return mars_dict
