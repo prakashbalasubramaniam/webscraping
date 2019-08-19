@@ -17,7 +17,7 @@
 
       <div class="row">
         <div class="col-md-12"> 
-          <div <span class="offset-1 badge badge-dark"><h1> Mission to Mars</h1></span></div>
+          <div <span class="badge badge-dark"><h1> Mission to Mars</h1></span></div>
         </div>
       </div>
 
@@ -25,24 +25,50 @@
         <div class="col-md-6">            
             <div class="jumbotron jumbotron-fluid">                   
                   <h2 class="offset-1 display-6">{{mars_info.mars_title}}</h2>
-                  <p class="offset-1 lead">{{mars_info.mars_news}}</p>                
+                  <p class="offset-1 lead">{{mars_info.mars_news}}</p> 
+                  <p class="offset-1 lead">Current Temperature :</p>    
+                  <p class="offset-1 lead">{{mars_info.mars_currentweather}}</p>            
             </div>
+        </div>
+        <div class="col-md-3">
+          <h6 class="display-6">Mars Profile</h6>            
+          <ul class="list-group">              
+              {% for mars_profile in mars_info.mars_profile %}
+                <li class="list-group-item">{{mars_profile.description}} {{mars_profile.value}}</li>           
+              {% endfor %}
+          </ul>
+        </div>
+        <div class="col-md-3">
+            <h6 class="display-6">Mars/ Earth Comparison</h6>            
+            <ul class="list-group">              
+                {% for mars_comparison in mars_info.mars_comparison %}
+                  <li class="list-group-item">{{mars_comparison.description}} {{mars_comparison.mars}} / {{mars_comparison.earth}}</li>           
+                {% endfor %}
+            </ul>
         </div>
       </div>
 
+      
       <div class="row">
-          <div class="col-md-12">
-            {% for hemis_pics in mars_info.mars_image_urls %}
+            {% for hemis_pics in mars_info.mars_image_urls %}           
               <div class="offset-1 card border-warning text-center" style="width: 15rem;">
-                  <img src= {{hemis_pics.img_url}} class="card-img-top" alt="Temperature">
+                  <img src= {{hemis_pics.img_url}} class="card-img-top" alt="Hemis Pics">
                   <div class="card-body text-warning">
                       <h6 class="card-title">{{hemis_pics.title}}</h6>                    
                   </div>          
               </div>
             {% endfor %}
-          </div>
+
       </div>
 
+      <div class="row">
+          <div class="offset-5 card border-warning text-center" style="width: 15rem;">
+              <img src= {{mars_info.mars_image}} class="card-img-top" alt="Pick Pic">
+              <div class="card-body text-warning">
+                  <h6 class="card-title">Picture of the Day</h6>                    
+              </div>          
+          </div>
+      </div>
  
 
 
