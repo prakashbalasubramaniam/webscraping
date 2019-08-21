@@ -8,7 +8,7 @@ from splinter import Browser
 # define a placeholder for saved variables
 mars_dict = {}
 
-# website scrape function
+# function to get headlines, paragraphs, not images
 def scraping_func(url):
     # Path to chromedriver
     executable_path = {'executable_path': 'chromedriver.exe'}
@@ -27,6 +27,95 @@ def scraping_func(url):
     
     #return scraped object
     return scrape_soup
+
+# function to get Featured image
+def get_featured_img_func(url):
+    # Path to chromedriver
+    executable_path = {'executable_path': 'chromedriver.exe'}
+    browser = Browser('chrome', **executable_path, headless=False)
+    
+    # Go to website
+    browser.visit(url)   
+    
+    # find "Full Image" button to click on it to get to next webpage
+    full_img = browser.find_by_id("full_image")
+    full_img.click()
+    
+    # find "More Info" button to click on it to get to next webpage
+    browser.is_element_present_by_text('more info', wait_time=1)
+    more_info_elem = browser.find_link_by_partial_text('more info')
+    more_info_elem.click()
+    
+    # read website's html
+    html = browser.html
+    soup = bs(html, 'html.parser')
+    
+    # find "a" tag to find href containing the URL
+    result = browser.find_by_tag("a")
+    relative_image_path = result[58]["href"] 
+    
+    # Close the browser after scraping
+    browser.quit()
+    
+    #return scraped object
+    return relative_image_path
+
+# function to get Hemis images
+def get_hemis_img(url):
+    # Path to chromedriver
+    executable_path = {'executable_path': 'chromedriver.exe'}
+    browser = Browser('chrome', **executable_path, headless=False)
+            
+    # Go to website
+    browser.visit(url)
+    
+    # read website's html
+    html = browser.html
+    soup = bs(html, 'html.parser')
+
+    # find "a" tag
+    result = browser.find_by_tag("a")
+    
+    # define a list to hold 1st link to full images
+    hemis_image_path_list = []
+    for i in range(8):
+        # if link exist, skip saving to list
+        if (result[i+4]["href"]) in hemis_image_path_list:
+            print('')
+        else:
+            hemis_image_path_list.append(result[i+4]["href"])
+
+    # Close the browser after scraping
+    browser.quit()
+    
+    final_hemis_img_url_list = []
+    for i in range(len(hemis_image_path_list)):
+        # Path to chromedriver
+        executable_path = {'executable_path': 'chromedriver.exe'}
+        browser = Browser('chrome', **executable_path, headless=False)
+        
+        # Go to website
+        browser.visit(hemis_image_path_list[i])
+        
+        # read website's html
+        html = browser.html
+        soup = bs(html, 'html.parser')
+        
+        # get image title
+        result_title = soup.find('h2', class_='title').get_text()  
+        
+        # get image URL
+        result = soup.find('img', class_='wide-image')["src"]
+        final_url = 'https://astrogeology.usgs.gov' + result
+        
+        # concat image URL to get complete URL link
+        final_hemis_img_url_list.append({"title": result_title, "img_url": final_url})
+
+        # Close the browser after scraping
+        browser.quit()
+    
+    return final_hemis_img_url_list
+
 
 
 def scrape():
@@ -57,12 +146,8 @@ def scrape():
     # Set Website URL to scrape
     url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars/'
 
-    # Call scrape function and pass in url
-    scrape_soup = scraping_func(url)
-
-    # Get latest picture
-    relative_image_path = scrape_soup.find_all('img')[3]["src"]
-    featured_image_url = url + relative_image_path
+    # call function to get the URL
+    featured_image_url = get_featured_img_func(url)
 
     ### 3) Mars Weather
     #* Visit the Mars Weather twitter account [here](https://twitter.com/marswxreport?lang=en) and 
@@ -117,12 +202,11 @@ def scrape():
     #* Append the dictionary with the image url string and the hemisphere title to a list. 
     # This list will contain one dictionary for each hemisphere.
 
-    hemisphere_image_urls = [
-        {"title": "Valles Marineris Hemisphere", "img_url": "https://astrogeology.usgs.gov/cache/images/7cf2da4bf549ed01c17f206327be4db7_valles_marineris_enhanced.tif_full.jpg"},
-        {"title": "Cerberus Hemisphere", "img_url": "https://astrogeology.usgs.gov/cache/images/cfa62af2557222a02478f1fcd781d445_cerberus_enhanced.tif_full.jpg"},
-        {"title": "Schiaparelli Hemisphere", "img_url": "https://astrogeology.usgs.gov/cache/images/3cdd1cbf5e0813bba925c9030d13b62e_schiaparelli_enhanced.tif_full.jpg"},
-        {"title": "Syrtis Major Hemisphere", "img_url": "https://astrogeology.usgs.gov/cache/images/ae209b4e408bb6c3e67b6af38168cf28_syrtis_major_enhanced.tif_full.jpg"},
-    ]
+    # Set Website URL to scrape
+    url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+
+    # call function to get Hemis Images URL
+    final_hemis_img_url_list = get_hemis_img(url)
 
     mars_dict["mars_title"] = news_title
     mars_dict["mars_news"] = news_p
@@ -130,6 +214,6 @@ def scrape():
     mars_dict["mars_currentweather"] = mars_weather
     mars_dict["mars_comparison"] = mars_comparison
     mars_dict["mars_profile"] = mars_profile
-    mars_dict["mars_image_urls"] = hemisphere_image_urls
+    mars_dict["mars_image_urls"] = final_hemis_img_url_list
 
     return mars_dict
