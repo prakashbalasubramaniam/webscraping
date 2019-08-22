@@ -57,14 +57,20 @@ def get_featured_img_func(url):
     result = browser.find_by_tag("a")
     relative_image_path = result[58]["href"] 
     
-    # browser reload
-    browser.reload()
-
+    # get image title
+    relative_image_title = soup.find('h1', class_='article_title')
+    relative_image_title = relative_image_title.get_text()
+    relative_image_title = relative_image_title.split('\t')
+    relative_image_title
+    relative_image_title[4]
+    final_title_feature_img = []
+    final_title_feature_img.append({'Title': relative_image_title[4], 'URL': relative_image_path})    
+    
     # Close the browser after scraping
     browser.quit()
     
     #return scraped object
-    return relative_image_path
+    return final_title_feature_img
 
 # function to get Hemis images
 def get_hemis_img(url):
@@ -159,7 +165,7 @@ def scrape():
     url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars/'
 
     # call function to get the URL
-    featured_image_url = get_featured_img_func(url)
+    final_title_feature_img = get_featured_img_func(url)
 
     ### 3) Mars Weather
     #* Visit the Mars Weather twitter account [here](https://twitter.com/marswxreport?lang=en) and 
@@ -174,8 +180,22 @@ def scrape():
 
     # Get latest weather tweet
     mars_weather_find = scrape_soup.find('p', class_='TweetTextSize TweetTextSize--normal js-tweet-text tweet-text')
-
     mars_weather = mars_weather_find.get_text()
+
+    # Split by new line \n
+    mars_weather_splits = mars_weather.split('\n')   
+    # Remove the twitter tag after pressure measurement
+    temp = mars_weather_splits[2].split('pic.twitter.com/MhPPOHJg3m') 
+    # Delete the pressure measurement with twitter tag   
+    del mars_weather_splits[2]
+    # add back filtered pressure
+    mars_weather_splits.append(temp[0])
+    # create a list of weather profile
+    final_mars_weather = []
+    temperature_list = ['Temperature', 'Wind', 'Pressure']
+    for i in range(3):
+        mars_weather_splits_dict = {'weather': temperature_list[i], 'value': mars_weather_splits[i]}
+        final_mars_weather.append(mars_weather_splits_dict)
 
     ### 4) Mars Facts
     #* Visit the Mars Facts webpage [here](https://space-facts.com/mars/) and 
@@ -222,8 +242,8 @@ def scrape():
 
     mars_dict["mars_title"] = news_title
     mars_dict["mars_news"] = news_p
-    mars_dict["mars_image"] = featured_image_url
-    mars_dict["mars_currentweather"] = mars_weather
+    mars_dict["mars_image"] = final_title_feature_img
+    mars_dict["mars_currentweather"] = final_mars_weather
     mars_dict["mars_comparison"] = mars_comparison
     mars_dict["mars_profile"] = mars_profile
     mars_dict["mars_image_urls"] = final_hemis_img_url_list

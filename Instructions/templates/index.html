@@ -26,8 +26,10 @@
             <div class="jumbotron jumbotron-fluid">                   
                   <h2 class="offset-1 display-6">{{mars_info.mars_title}}</h2>
                   <p class="offset-1 lead">{{mars_info.mars_news}}</p> 
-                  <p class="offset-1 lead">Current Temperature :</p>    
-                  <p class="offset-1 lead">{{mars_info.mars_currentweather}}</p>            
+                  <p class="offset-1 lead">Current Temperature, Wind & Pressure :</p>
+                  {% for mars_currentweather in mars_info.mars_currentweather %}    
+                    <p class="offset-1 lead">{{mars_currentweather.weather}} - {{mars_currentweather.value}}</p>
+                  {% endfor %}            
             </div>
         </div>
         <div class="col-md-3">
@@ -51,9 +53,9 @@
       
       <div class="row">
             {% for hemis_pics in mars_info.mars_image_urls %}           
-              <div class="offset-1 card border-warning text-center" style="width: 15rem;">
+              <div class="offset-1 card border-info text-center" style="width: 15rem;">
                   <img src= {{hemis_pics.img_url}} class="card-img-top" alt="Hemis Pics">
-                  <div class="card-body text-warning">
+                  <div class="card-body text-info">
                       <h6 class="card-title">{{hemis_pics.title}}</h6>                    
                   </div>          
               </div>
@@ -62,12 +64,14 @@
       </div>
 
       <div class="row">
-          <div class="offset-5 card border-warning text-center" style="width: 15rem;">
-              <img src= {{mars_info.mars_image}} class="card-img-top" alt="Pick Pic">
-              <div class="card-body text-warning">
-                  <h6 class="card-title">Picture of the Day</h6>                    
+          {% for feat_pics in mars_info.mars_image %} 
+          <div class="offset-5 card border-info text-center" style="width: 15rem;">
+              <img src= {{feat_pics.URL}} class="card-img-top" alt="Pick Pic">
+              <div class="card-body text-info">
+                  <h6 class="card-title">Picture of the Day - {{feat_pics.Title}}</h6>                    
               </div>          
           </div>
+          {% endfor %}
       </div>
  
 
