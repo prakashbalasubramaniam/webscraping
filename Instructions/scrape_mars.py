@@ -22,6 +22,9 @@ def scraping_func(url):
     html = browser.html
     scrape_soup = bs(html, 'html.parser')
 
+    # browser reload
+    browser.reload()
+
     # Close the browser after scraping
     browser.quit()
     
@@ -54,6 +57,9 @@ def get_featured_img_func(url):
     result = browser.find_by_tag("a")
     relative_image_path = result[58]["href"] 
     
+    # browser reload
+    browser.reload()
+
     # Close the browser after scraping
     browser.quit()
     
@@ -85,6 +91,9 @@ def get_hemis_img(url):
         else:
             hemis_image_path_list.append(result[i+4]["href"])
 
+    # browser reload
+    browser.reload()
+
     # Close the browser after scraping
     browser.quit()
     
@@ -110,6 +119,9 @@ def get_hemis_img(url):
         
         # concat image URL to get complete URL link
         final_hemis_img_url_list.append({"title": result_title, "img_url": final_url})
+
+        # browser reload
+        browser.reload()
 
         # Close the browser after scraping
         browser.quit()
